@@ -60,7 +60,7 @@ def addrt(ed,id): #rtet = running total edible tallow
 #     global id_g
 #     ed_g = et
 #     id_g = it
-ed_g = 75
+ed_g = 100 #normally is 75
 id_g = 80
 
 def quartly_goals(d=62): #d=day(s) 
@@ -137,21 +137,36 @@ def display_charts():
     # 288/hr 244.8mon.avg. 269chain speed actual 260, 299 chain speed actual 263 
     # 265 harvestfloor
     ar = np.array(dt_ed[-10:])
+    ar = ar[::-1]
     ar = ar.astype(float)
     x = np.arange(len(ar))[::-1]
     goal = ed_g * np.ones(len(ar))
     goal2 = np.repeat(ed_g, len(ar))
-    plt.bar(x, ar,color="yellow")  # need to mark either up to 75 or up to n in ar
-    plt.bar(x, ar, bottom=goal, color='green')
-    dif = ar - goal2
-    dif2 = np.abs(dif)
-    negative_mask = dif < 0
-    plt.bar(x, dif2, bottom=ar, color='red',where=(negative_mask)) #need to find the goal - ar at those parts
+
+    hgreen = ar - ed_g
+    x1 = ar < ed_g
+    hgreen[x1] = 0
+
+    plt.bar(x,hgreen, bottom=hgreen,color="blue") # cuz green gets cut off
+    hgray = ar
+    x2 = ar >= ed_g
+    hgray[x2] = ed_g
+    plt.bar(x, hgray)  # need to mark either up to 75 or up to n in ar
+
+    plt.bar(x, hgreen, bottom=hgray, color='green')
+    y = ar > ed_g #maskface of Trues everywhere daily total is less than daily goal
+    hreds = ed_g - ar #finding by how much
+    hreds[y] = 0 #clearing the days where they didn't go under the daily goal. 
+    plt.bar(x, hreds, bottom=ar, color='red') #need to find the goal - ar at those parts
     plt.xlabel('Days')
     plt.ylabel('Edible-Tallow')
     plt.title('Past Previous 10 Days')
     plt.legend()
     plt.show()
+
+
+
+    """we got bar yellow, green shaving the tops off whereever it's past 75, the we got red to fill the gaps: bottom= list of values that are under 75, top= list of values that are 75- what ever the list of bottoms are. """
 
     # plt.fill_between(range(len(dt_ed)), rt_ed, ed_g, where=(rt_ed >= ed_g), color='green', alpha=0.2, label='Goal Met')
     # plt.axhline(y=ed_g, color='r', linestyle='--', label='Daily Goal')
