@@ -1,53 +1,48 @@
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-# print(plt.__version__)
-
-# import tkinter 
-# from tkinter.constants import * #might  use tkinter, need it for the buttons... (eventually)
+import matplotlib.pyplot as plt 
 
 
 # MEAT cutting time calculator
-"""The purpose of this program is to calculate the time it takes to execute a certain number of cuts, and track progress towards next quarter's quota."""
+"""The purpose of this program is to calculate the time it takes to execute a certain number of cuts and to track progress.
+data:
+#pounds per head | edible talo 88 inedible 98 #2 tallo 8.8 greece 9 meat bone 10lbs blood 8.8lbs | tallos inventories every night | 288/hr 244.8 month.avg. 269chain speed actual 260, 299 chain speed actual 263 | 265 harvestfloor"""
 
-times = { # nameof cut : [time it takes to make each cut(in sec)]
+times = { #dict[nameof cut : [time it takes to make each cut(in sec)]]
     "Create_New" : [],
     "Trachea Cut" : [3],
     "Stomach Cut" : [5.5]}
-ed_g = 75
-
 
 dt_ed = [103.07, 98.52, 99.03, 100.71, 95.41, 97.50, 96.55, 96.77, 96.20, 94.25, 106.41, 100.92, 93.44, 95.34, 108.47, 95.71, 103.84, 99.99, 99.52, 96.87, 106.39, 100.36, 99.50, 95.27, 98.13, 101.03, 103.83, 96.06, 99.45, 98.56, 99.52, 103.51, 97.21, 98.28, 92.82, 96.52, 100.63, 110.46]  # Daily total edible
-rt_ed = np.cumsum(dt_ed)
+dt_id = [89.59, 91.26, 93.76, 84.51, 90.36, 87.91, 80.75, 83.34, 84.06, 78.26, 79.23, 86.48, 86.04, 85.69, 81.3, 85.66, 89.02, 84.53, 85.49, 103.45, 80.81, 84.24, 92.75, 84.24, 95.95, 87.53, 84.47, 99.21, 90.92, 84.19, 83.56, 81.85, 90.09, 88.12, 84.54, 89.06, 88.76, 93.91] # Daily total in-edible
 
-dt_id = [ 89.59, 91.26, 93.76, 84.51, 90.36, 87.91, 80.75, 83.34, 84.06, 78.26, 79.23, 86.48, 86.04, 85.69, 81.3, 85.66, 89.02, 84.53, 85.49, 103.45, 80.81, 84.24, 92.75, 84.24, 95.95, 87.53, 84.47, 99.21, 90.92, 84.19, 83.56, 81.85, 90.09, 88.12, 84.54, 89.06, 88.76, 93.91] # Daily total in-dedible
+rt_ed = np.cumsum(dt_ed) #running sums
 rt_id = np.cumsum(dt_id)
 
+ed_g = 75 #edible daily goal 
 
-#RAW DATA:
+
 """
 dt_ed_RAW = [103.07, 98.52, 99.03, 100.71, 95.41, 97.50, 96.55,, 96.77, 96.20, 94.25, 106.41, 100.92, 93.44, 95.34, 108.47, 95.71, 103.84, NA, 99.99, 99.52, 96.87, 106.39, 100.36, 99.50, 95.27, 98.13, 101.03, 103.83, 96.06, 99.45, 98.56, 99.52, 103.51, 97.21, 98.28, 92.82, 96.52, 100.63, 110.46]
 dt_id_RAW = [, 89.59, 91.26, 93.76, 84.51, 90.36, 87.91, 80.75, 83.34, 84.06, 78.26, 79.23, 86.48, 86.04, 85.69, 81.3, 85.66, 89.02, NA, 84.53, 85.49, 103.45, 80.81, 84.24, 92.75, 84.24, 95.95, 87.53, 84.47, 99.21, 90.92, 84.19, 83.56, 81.85, 90.09, 88.12, 84.54, 89.06, 88.76, 93.91]
-#PROPER WAY OF DOING IT: 
-#OPTION 1:
-indices_na = np.where(dt_id_array == 'NA')[0]
-dt_id_array[indices_na] = np.nan
-#OPTION 2:
+#numpy:
+i = np.where(dt_ed == 'NA')[0] #targeting specifically 'NA'
+dt_ed[i] = np.nan #89.02, np.nan, 84.53...
+dt_ed_RAW = list(filter(None, dt_ed_RAW)) #gets rid of extra gaps/spaces, or commas
+dt_id_cleaned = np.nan_to_num(dt_id_raw, nan=0)  # Replace missing values with 0
+dt_id_cleaned = dt_id_raw[~np.isnan(dt_id_raw)] #remove missing values
+print(dt_ed)
+#pandas:
 dt_id_series = pd.Series(dt_id_RAW) 
 dt_id_series = dt_id_series.replace('NA', np.nan) #better
-#THEN
-dt_ed_RAW = list(filter(None, dt_ed_RAW)) #gets rid of extra gaps/spaces, or commas
-#OR
 dt_ed_RAW = [x for x in dt_ed_RAW if x] #gets rid of extra gaps/spaces, or commas
+print(dt_edp)
 
-dt_id_raw = np.array([89.59, 91.26, 93.76, 84.51, 90.36, 87.91, 80.75, 83.34, 84.06, 78.26, 79.23, 86.48, 86.04, 85.69, 81.3, 85.66, 89.02, np.nan, 84.53, 85.49, 103.45, 80.81, 84.24, 92.75, 84.24, 95.95, 87.53, 84.47, 99.21, 90.92, 84.19, 83.56, 81.85, 90.09, 88.12, 84.54, 89.06, 88.76, 93.91])
-
-# Handle missing values (replace with a specific value or remove)
-dt_id_cleaned = np.nan_to_num(dt_id_raw, nan=0)  # Replace missing values with 0
-# Alternatively, you can remove missing values:
-# dt_id_cleaned = dt_id_raw[~np.isnan(dt_id_raw)]
+#--- still need to figure out how to get rid of excess commas and still make them match
 """
+
+
 
 def addrt(ed,id): #rtet = running total edible tallow
     global rt_ed #why is this not blue????
@@ -133,9 +128,7 @@ def t_calc():
 
 def display_charts():
     """chart #1: each day meat the goal, excess red or green"""
-    #pounds per head | edible talo 88 inedible 98 #2 tallo 8.8 greece 9 meat bone 10 blood 8.8 | tallos inventories every night 
-    # 288/hr 244.8mon.avg. 269chain speed actual 260, 299 chain speed actual 263 
-    # 265 harvestfloor
+    #plt.style.use("ggplot") #changes style
     ar = np.array(dt_ed[-10:])
     ar = ar[::-1]
     ar = ar.astype(float)
@@ -235,5 +228,9 @@ menu()
 # user = create_type_of_slice(name_of_cut)
 # print(f"Congratulations on using nic's software! to complete {number_of_cuts} {name_of_cut} cuts it would take {str(users_cut(number_of_cuts))} seconds. ")
 
+#read/write into file dt_ed and dt_id
+#be able to set new goal from the user. 
 #Next, create a list for the users to pick and choose from | and make sure when they're about to pic, they know how long it takes to make the cut. 
 #inthe future could add date/time on graph in create a list to hold date/time. 
+## import tkinter 
+# from tkinter.constants import * #might  use tkinter, need it for the buttons... (eventually)
